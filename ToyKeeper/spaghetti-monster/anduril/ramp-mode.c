@@ -295,7 +295,27 @@ uint8_t steady_state(Event event, uint16_t arg) {
             if (stepdown < MIN_THERM_STEPDOWN) stepdown = MIN_THERM_STEPDOWN;
             else if (stepdown > MAX_LEVEL) stepdown = MAX_LEVEL;
             #ifdef USE_SET_LEVEL_GRADUALLY
-            set_level_gradually(stepdown);
+                #ifdef TURBO_TEMP_EXTRA
+                    // XXX new variable instead of reusing TURBO_TEMP_EXTRA for this?
+                    /* THERMAL MODIFICATONS
+
+                       Some modifications were made to enable the following scenario in Fireflies E12R.
+                       The FET has 3.9kHz PWM, and thermal gradual stepdown causes a whine.
+                       Change behavior so that thermal stepdown is a step response directly to 6A.
+                       Levels 1 to 149 are CC, 150 is turbo at 100% no PWM. 
+                       In addition, since body and sensor temperatures have a lag, add TURBO_TEMP_EXTRA.
+                       So only when temperature >temp_ceil+TURBO_TEMP_EXTRA && ramp is at 150, then drop.
+                       Otherwise, thermal regulation remains at user set temp_ceil (either default or in EEprom).
+                    */
+                    if (actual_level == 150) {
+                        set_level(149);
+                    }
+                    else {
+                        set_level_gradually(stepdown);
+                    }
+                #else
+                    set_level_gradually(stepdown);
+                #endif
             #else
             set_level(stepdown);
             #endif

@@ -429,10 +429,16 @@ static inline void ADC_temperature_handler() {
     pt = measurement + (diff * THERM_LOOKAHEAD);
 
     // convert temperature limit from C to raw 16-bit ADC units
+    #ifdef EXTERN_TEMP_REVERSE_FORMULA
+    // external sensor, need to use a reverse formula otherwise the ceiling temperature will be calculated incorrectly
+    // convert (therm_ceil in Celsius - therm_cal_offset - THERM_CAL_OFFSET) to ADC value 
+    uint16_t ceil = ((uint16_t)EXTERN_TEMP_REVERSE_FORMULA(therm_ceil- therm_cal_offset - THERM_CAL_OFFSET) ) << 1;
+    #else
     // C = (ADC>>6) - 275 + THERM_CAL_OFFSET + therm_cal_offset;
     // ... so ...
     // (C + 275 - THERM_CAL_OFFSET - therm_cal_offset) << 6 = ADC;
     uint16_t ceil = (therm_ceil + 275 - therm_cal_offset - THERM_CAL_OFFSET) << 1;
+    #endif
     int16_t offset = pt - ceil;
 
     // bias small errors toward zero, while leaving large errors mostly unaffected
@@ -466,8 +472,25 @@ static inline void ADC_temperature_handler() {
             if (howmuch < 1) howmuch = 1;
             warning_threshold = THERM_NEXT_WARNING_THRESHOLD - (uint8_t)howmuch;
 
+/* THERMAL MODIFICATONS WITH TURBO_TEMP_EXTRA
+
+   Some modifications were made to enable the following scenario in Fireflies E12R.
+   The FET has 3.9kHz PWM, and thermal gradual stepdown causes a whine.
+   Change behavior so that thermal stepdown is a step response directly to 6A.
+   Levels 1 to 149 are CC, 150 is turbo at 100% no PWM. 
+   In addition, since body and sensor temperatures have a lag, add TURBO_TEMP_EXTRA.
+   So only when temperature >temp_ceil+TURBO_TEMP_EXTRA && ramp is at 150, then drop.
+   Otherwise, thermal regulation remains at user set temp_ceil (either default or in EEprom).
+*/
+            #ifdef TURBO_TEMP_EXTRA
+            // XXX only step down at turbo?
+            if (!((temperature < (therm_ceil + TURBO_TEMP_EXTRA)) && (actual_level==150))) {
+                emit(EV_temperature_high, howmuch);
+            }
+            #else
             // send a warning
             emit(EV_temperature_high, howmuch);
+            #endif
         }
     }
 
