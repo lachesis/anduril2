@@ -50,7 +50,7 @@ inline void set_level_override(uint8_t level);
 //#define DEFAULT_MANUAL_MEMORY        DEFAULT_LEVEL
 //#define DEFAULT_MANUAL_MEMORY_TIMER  10
 
-#define RAMP_SMOOTH_FLOOR 3  // level 1 is unreliable (?)
+#define RAMP_SMOOTH_FLOOR 1  // level 1 is unreliable (?)
 #define RAMP_SMOOTH_CEIL  120
 // 10, 28, [46], 65, 83, 101, [120]
 #define RAMP_DISCRETE_FLOOR 10

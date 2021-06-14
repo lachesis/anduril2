@@ -88,14 +88,10 @@ uint8_t lockout_state(Event event, uint16_t arg) {
     }
     #endif
 
-    // 4 clicks: exit and turn on
+    // 4 clicks: exit
     else if (event == EV_4clicks) {
-        #ifdef USE_MANUAL_MEMORY
-        if (manual_memory)
-            set_state(steady_state, manual_memory);
-        else
-        #endif
-        set_state(steady_state, memorized_level);
+        blink_once();
+        set_state(off_state, 0);
         return MISCHIEF_MANAGED;
     }
     // 4 clicks, but hold last: exit and start at floor

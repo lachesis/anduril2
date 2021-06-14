@@ -34,7 +34,7 @@
 #define HALFSPEED_LEVEL 10
 #define QUARTERSPEED_LEVEL 2
 
-#define RAMP_SMOOTH_FLOOR 3  // level 1 is unreliable
+#define RAMP_SMOOTH_FLOOR 1  // level 1 is unreliable
 #define RAMP_SMOOTH_CEIL  120
 // 10, 28, [46], 65, 83, 101, [120]
 #define RAMP_DISCRETE_FLOOR 10

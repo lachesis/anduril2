@@ -39,6 +39,10 @@
 #define SIMPLE_UI_CEIL 95
 #define SIMPLE_UI_STEPS 5
 
+#define DEFAULT_LEVEL MAX_1x7135
+#define DEFAULT_MANUAL_MEMORY        DEFAULT_LEVEL
+#define DEFAULT_MANUAL_MEMORY_TIMER  10
+
 // stop panicking at ~30% power or ~1200 lm
 #define THERM_FASTER_LEVEL 105
 

@@ -39,9 +39,9 @@
 #define DEFAULT_THERM_CEIL 45  // try not to get hotter than this (in C)
 
 
-// Include a simplified UI for non-enthusiasts?
+// Include a simplified UI for non-enthusiasts? but deactivate by default
 #define USE_SIMPLE_UI
-
+#define SIMPLE_UI_ACTIVE 0
 
 ///// Ramp mode options /////
 
